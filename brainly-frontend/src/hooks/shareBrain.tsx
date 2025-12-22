@@ -1,7 +1,9 @@
 import axios from "axios";
-import { BACKEND_URL } from "../config";
+  const VITE_BACKEND_URL  =  import.meta.env.VITE_BACKEND_URL
 
 export async function shareBrain(){
-  const respone = await axios.post(`${BACKEND_URL}/brain/share`,{share:true},{withCredentials:true})
-const shareUrl = `http://localhost300/brain${respone.data.link}`
+  const respone = await axios.post(`${VITE_BACKEND_URL}/brain/share`,{share:true},{withCredentials:true})
+const shareUrl = `${VITE_BACKEND_URL}/brain${respone.data.link}`
+
+return shareUrl
 }

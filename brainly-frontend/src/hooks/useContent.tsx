@@ -1,11 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { BACKEND_URL } from "../config";
+ const VITE_BACKEND_URL  =  import.meta.env.VITE_BACKEND_URL
 
 export function useContent(){
     const [contents,setContents] = useState([])
          function refresh (){
-              axios.get(`${BACKEND_URL}/document`,{withCredentials:true}).then((response)=>{setContents(response.data.content)})
+              axios.get(`${VITE_BACKEND_URL}/document`,{withCredentials:true}).then((response)=>{setContents(response.data.content)})
 }
     useEffect(()=>{
         refresh()
