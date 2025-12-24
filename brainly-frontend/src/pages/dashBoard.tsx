@@ -26,7 +26,7 @@ useEffect(()=>{
       <CreateContentmodal open ={ModalOpen} onClose={()=>{setModalOpen(false)}}/>
         <div className='flex  justify-end gap-4 '>
           <Button varient='secondary' text='share brain' size='sm' startIcon={<ShareIcon size='md'/>} onClick={shareBrain}/>
-          <Button varient='primary' text='add-content' size='sm' startIcon={<PlusIcon size='md'/>} onClick={()=>{setModalOpen(true)}}/>
+          <Button varient='primary' text='add content' size='sm' startIcon={<PlusIcon size='md'/>} onClick={()=>{setModalOpen(true)}}/>
        </div>
         <div className='flex gap-2 flex-wrap pt-2'>   
           {contents.map(({type,link,title})=><Card  type={type} link={link} title={title}/>)}
