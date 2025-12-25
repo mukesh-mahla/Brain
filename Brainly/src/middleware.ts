@@ -8,6 +8,7 @@ try{const token = req.cookies.token
 const decode = Jwt.verify(token,JWT_USER_SECRET) 
 //@ts-ignore
  req.userId = decode.id
+ 
  next()
 }catch(err){
     console.log(err);
