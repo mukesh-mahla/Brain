@@ -1,15 +1,19 @@
+import dotenv from "dotenv"
+dotenv.config()
 import jwt from "jsonwebtoken";
 import express from "express";
 import { User,Link,Content,Tags } from "./db";
 const app = express()
 const router = express.Router();
-export const JWT_USER_SECRET = "super@123"
+const JWT_USER_SECRET = process.env.JWT_USER_SECRET!
 import bcrypt, { hash } from "bcrypt"
 import { userAuth } from "./middleware";
 import mongoose from "mongoose";
 import { randon } from "./utils";
 import cookieParser from "cookie-parser"
 import cors from "cors"
+import { getEmbedding } from "./embedding";
+import { index } from "./vector";
 
 mongoose.connect("mongodb://127.0.0.1:27017/brainly").then(()=>{
   console.log("mongoose started")
@@ -65,6 +69,26 @@ const userId = req.userId
  const newContent= await Content.create({
   link,type,title,tags:[],userId
  })
+
+const textForEmbedding = `
+Title: ${title}
+Type: ${type}
+Link: ${link}
+`;
+
+const embedding = await getEmbedding(textForEmbedding);
+
+await index.upsert([
+  {
+    id: newContent._id.toString(),
+    values: embedding,
+    metadata: {
+      userId: userId.toString()
+    }
+  }
+]);
+
+
  res.json({msg:"added succesfully"})
 
 })
@@ -86,6 +110,10 @@ if(!userId || !id){
   return
 }
   const content =await Content.findOneAndDelete({userId,_id:id})
+
+ if (content) {
+    await index.deleteOne(id); 
+  }
 
   res.json({msg:"deleted"})
 })
@@ -124,5 +152,41 @@ router.get("/brain/:shareLink",async(req,res)=>{
       })
      res.json({userName:user?.firstName,contents:content})
 })
+
+router.post("/reindex", userAuth, async (req, res) => {
+  //@ts-ignore
+  const userId = req.userId;
+
+  // 1️⃣ Get all user content from MongoDB
+  const contents = await Content.find({ userId });
+
+  // 2️⃣ Loop over each content
+  for (const content of contents) {
+    const textForEmbedding = `
+Title: ${content.title}
+Type: ${content.type}
+Link: ${content.link}
+`;
+
+    const embedding = await getEmbedding(textForEmbedding);
+
+    // 3️⃣ Upsert vector (same ID = replace if exists)
+    await index.upsert([
+      {
+        id: content._id.toString(),
+        values: embedding,
+        metadata: {
+          userId: userId.toString()
+        }
+      }
+    ]);
+  }
+
+  res.json({
+    msg: "Reindex completed",
+    total: contents.length
+  });
+});
+
 
 app.listen(3000,()=>console.log("server startde at 3000"))
