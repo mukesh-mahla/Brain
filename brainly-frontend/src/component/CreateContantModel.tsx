@@ -3,6 +3,8 @@ import { CrossIcon } from "../icons/croos";
 import { Button } from "./button";
 import { Input } from "./Input";
 import axios from "axios";
+import { getYouTubeEmbedUrl } from "../utils/youtybeUrl";
+
       const BACKEND_URL  =  import.meta.env.VITE_BACKEND_URL
 
 enum ContentType{
@@ -18,7 +20,9 @@ export function CreateContentmodal({open,onClose}:{open:boolean,onClose:()=>void
              async function addContent(){
                      const title = titleRef.current?.value
                        const link = linkRef.current?.value
-                      await axios.post(`${BACKEND_URL}/addcontent`,{link,type,title},{withCredentials:true})
+
+                       const embedUrl = getYouTubeEmbedUrl(link!)
+                      await axios.post(`${BACKEND_URL}/addcontent`,{ link: type == ContentType.youtube ? embedUrl : link, type, title },{withCredentials:true})
                       onClose()
                     }
 

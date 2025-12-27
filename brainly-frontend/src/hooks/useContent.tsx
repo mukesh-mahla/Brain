@@ -9,7 +9,7 @@ export function useContent(){
 }
     useEffect(()=>{
         refresh()
-      const interval=  setInterval(refresh,10*1000)
+      const interval=  setInterval(refresh,100*1000)
 
         return ()=>{
             clearInterval(interval)

@@ -14,7 +14,7 @@ import axios from 'axios'
 
 
 
-const p = 0
+
 
 export function DashBoard() {
    const [ModalOpen,setModalOpen] = useState(false)
@@ -45,8 +45,8 @@ useEffect(()=>{
 },[ModalOpen])
 
 useEffect(()=>{
-  axios.post(`${import.meta.env.VITE_API_URL}/reindex`,{}, { withCredentials: true })
-},[p])
+  axios.post(`${import.meta.env.VITE_BACKEND_URL}/reindex`,{}, { withCredentials: true })
+},[])
 
 
   return <div>
@@ -57,12 +57,12 @@ useEffect(()=>{
           <Button varient='secondary' text='share brain' size='sm' startIcon={<ShareIcon size='md'/>} onClick={shareBrain}/>
           <Button varient='primary' text='add content' size='sm' startIcon={<PlusIcon size='md'/>} onClick={()=>{setModalOpen(true)}}/>
        </div>
-       <div className="flex gap-2 mb-4">
+       <div className="flex gap-2 m-4">
   <input
     value={query}
     onChange={(e) => setQuery(e.target.value)}
     placeholder="Search by meaning (e.g. auth notes)"
-    className="border p-2 rounded w-80"
+    className="border p-2 rounded w-full "
   />
   <Button
     text="Search"
@@ -71,9 +71,11 @@ useEffect(()=>{
     onClick={handleSearch}
   />
 </div>
+<div>
 {searchResults.map(({ type, link, title }) => (
   <Card type={type} link={link} title={title} />
 ))}
+</div>
         <div className='flex gap-2 flex-wrap pt-2'>   
           {contents.map(({type,link,title})=><Card  type={type} link={link} title={title}/>)}
         </div>
