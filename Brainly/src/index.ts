@@ -2,11 +2,11 @@ import dotenv from "dotenv"
 dotenv.config()
 import jwt from "jsonwebtoken";
 import express from "express";
-import { User,Link,Content,Tags } from "./db";
+import { User,Link,Content } from "./db";
 const app = express()
 const router = express.Router();
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET!
-import bcrypt, { hash } from "bcrypt"
+import bcrypt from "bcrypt"
 import { userAuth } from "./middleware";
 import mongoose from "mongoose";
 import { randon } from "./utils";
@@ -119,8 +119,9 @@ if(!userId || !id){
 })
 router.post("/brain/share",userAuth,async(req,res)=>{
   const share = req.body.share
+  const hash = randon(10)
    if(share){
-    const hash = randon(10)
+    
    await Link.create({
       //@ts-ignore
       userId:req.userId,
@@ -157,10 +158,10 @@ router.post("/reindex", userAuth, async (req, res) => {
   //@ts-ignore
   const userId = req.userId;
 
-  // 1️⃣ Get all user content from MongoDB
+  
   const contents = await Content.find({ userId });
 
-  // 2️⃣ Loop over each content
+ 
   for (const content of contents) {
     const textForEmbedding = `
 Title: ${content.title}
@@ -170,7 +171,7 @@ Link: ${content.link}
 
     const embedding = await getEmbedding(textForEmbedding);
 
-    // 3️⃣ Upsert vector (same ID = replace if exists)
+    
     await index.upsert([
       {
         id: content._id.toString(),
@@ -187,6 +188,33 @@ Link: ${content.link}
     total: contents.length
   });
 });
+
+router.post("/search", userAuth, async (req, res) => {
+  const { query } = req.body;
+  //@ts-ignore
+  const userId = req.userId;
+
+  const embedding = await getEmbedding(query);
+
+  const result = await index.query({
+    vector: embedding,
+    topK: 5,
+    filter: {
+      userId: userId.toString()
+    }
+  });
+
+  const ids = result.matches
+    .filter(m => (m.score ?? 0) > 0.75)
+    .map(m => m.id);
+
+  const contents = await Content.find({
+    _id: { $in: ids }
+  });
+
+  res.json({ contents });
+});
+
 
 
 app.listen(3000,()=>console.log("server startde at 3000"))

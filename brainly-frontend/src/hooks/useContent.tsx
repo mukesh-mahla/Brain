@@ -14,6 +14,6 @@ export function useContent(){
         return ()=>{
             clearInterval(interval)
         }
-    })
+    },[])
     return {contents,refresh}
 }
