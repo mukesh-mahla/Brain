@@ -160,13 +160,15 @@ router.post("/reindex", userAuth, async (req, res) => {
 
   
   const contents = await Content.find({ userId });
+  
 
  
   for (const content of contents) {
     const textForEmbedding = `
-Title: ${content.title}
-Type: ${content.type}
-Link: ${content.link}
+this content is titled ${content.title}
+type of content is ${content.type}
+the Link is ${content.link}
+This content is saved by the user for future reference.
 `;
 
     const embedding = await getEmbedding(textForEmbedding);
@@ -205,7 +207,7 @@ router.post("/search", userAuth, async (req, res) => {
   });
 
   const ids = result.matches
-    .filter(m => (m.score ?? 0) > 0.75)
+    .filter(m => (m.score ?? 0) > 0.55)
     .map(m => m.id);
 
   const contents = await Content.find({

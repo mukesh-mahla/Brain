@@ -5,10 +5,12 @@ import { BrowserRouter,Routes,Route } from "react-router-dom";
 import { Signup } from "./pages/signup";
 import { DashBoard } from "./pages/dashBoard";
 import "./App.css"
+import LandingPage from "./pages/LandingPage";
 
 function app(){
   return <BrowserRouter>
   <Routes>
+    <Route path="/" element={<LandingPage/>}/>
     <Route path="/signup" element={<Signup/>}/>
     <Route path="/signin" element={<Signin/>}/>
     <Route path="/dashboard" element={<DashBoard/>}/>
