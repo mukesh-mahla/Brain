@@ -14,33 +14,33 @@ export function Signup() {
   const navigate = useNavigate();
 
   async function signup() {
-    const firstName = firstNameRef.current?.value;
-    const lastName = lastNameRef.current?.value;
-    const email = emailRef.current?.value;
-    const password = passwordRef.current?.value;
-
     await axios.post(BACKEND_URL + "/signup", {
-      firstName,
-      lastName,
-      email,
-      password,
+      firstName: firstNameRef.current?.value,
+      lastName: lastNameRef.current?.value,
+      email: emailRef.current?.value,
+      password: passwordRef.current?.value,
     });
 
-    alert("You have signed up!");
     navigate("/signin");
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center px-4">
+      <div className="
+        w-full max-w-md bg-white
+        rounded-2xl shadow-xl
+        p-8
+        animate-fadeIn
+      ">
         {/* Header */}
-        <h1 className="text-2xl font-bold text-slate-800 text-center">
-          Create your brain
-        </h1>
-        <p className="text-slate-500 text-center mt-1">
-          Start saving knowledge intelligently
-        </p>
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-slate-800">
+            Create your brain
+          </h1>
+          <p className="text-slate-500 mt-1">
+            Start saving knowledge intelligently
+          </p>
+        </div>
 
         {/* Form */}
         <div className="mt-8 space-y-4">
@@ -50,11 +50,10 @@ export function Signup() {
           <Input ref={passwordRef} placeholder="Password" type="password" />
         </div>
 
-        {/* Action */}
+        {/* Button */}
         <div className="mt-6">
           <Button
             onClick={signup}
-            loading={false}
             fullWidth
             varient="primary"
             size="md"
@@ -67,7 +66,7 @@ export function Signup() {
           Already have an account?{" "}
           <span
             onClick={() => navigate("/signin")}
-            className="text-indigo-600 cursor-pointer hover:underline"
+            className="text-indigo-600 cursor-pointer hover:underline transition"
           >
             Sign in
           </span>

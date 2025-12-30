@@ -12,12 +12,12 @@ export function Signin() {
   const navigate = useNavigate();
 
   async function signin() {
-    const email = emailRef.current?.value;
-    const password = passwordRef.current?.value;
-
     await axios.post(
       BACKEND_URL + "/signin",
-      { email, password },
+      {
+        email: emailRef.current?.value,
+        password: passwordRef.current?.value,
+      },
       { withCredentials: true }
     );
 
@@ -25,16 +25,22 @@ export function Signin() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center px-4">
+      <div className="
+        w-full max-w-md bg-white
+        rounded-2xl shadow-xl
+        p-8
+        animate-fadeIn
+      ">
         {/* Header */}
-        <h1 className="text-2xl font-bold text-slate-800 text-center">
-          Welcome back
-        </h1>
-        <p className="text-slate-500 text-center mt-1">
-          Sign in to access your second brain
-        </p>
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-slate-800">
+            Welcome back
+          </h1>
+          <p className="text-slate-500 mt-1">
+            Sign in to access your second brain
+          </p>
+        </div>
 
         {/* Form */}
         <div className="mt-8 space-y-4">
@@ -42,11 +48,10 @@ export function Signin() {
           <Input ref={passwordRef} placeholder="Password" type="password" />
         </div>
 
-        {/* Action */}
+        {/* Button */}
         <div className="mt-6">
           <Button
             onClick={signin}
-            loading={false}
             fullWidth
             varient="primary"
             size="md"
@@ -59,7 +64,7 @@ export function Signin() {
           Don’t have an account?{" "}
           <span
             onClick={() => navigate("/signup")}
-            className="text-indigo-600 cursor-pointer hover:underline"
+            className="text-indigo-600 cursor-pointer hover:underline transition"
           >
             Sign up
           </span>
