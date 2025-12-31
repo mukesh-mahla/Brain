@@ -8,3 +8,12 @@ export function randon(len:number){
     }
     return ans
 }
+
+export function buildContext(contents: any[]) {
+  return contents
+    .map(
+      (c, i) =>
+        `${i + 1}. ${c.title}\nLink: ${c.link}`
+    )
+    .join("\n\n");
+}
