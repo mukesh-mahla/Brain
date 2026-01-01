@@ -6,6 +6,7 @@ import { getEmbedding } from '../embedding';
 import { userAuth } from '../middleware';
 import { Content, Link, User } from '../db';
 import { buildContext, randon } from '../utils';
+import { askGeminiStream } from './askGemini';
 
 export const router = express.Router();
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET!;
@@ -208,10 +209,14 @@ router.post("/rag", userAuth, async (req: any, res: any) => {
   // @ts-ignore
   const userId = req.userId;
 
-  // 1️⃣ Embed the question
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.flushHeaders();
+ 
   const queryEmbedding = await getEmbedding(question);
 
-  // 2️⃣ Retrieve relevant vectors
+  
   const result = await index.query({
     vector: queryEmbedding,
     topK: 6,
@@ -222,7 +227,7 @@ router.post("/rag", userAuth, async (req: any, res: any) => {
 
   const ids = result.matches.map(m => m.id);
 
-  // 3️⃣ Fetch content from MongoDB
+
   const contents = await Content.find({
     _id: { $in: ids },
   });
@@ -233,32 +238,40 @@ router.post("/rag", userAuth, async (req: any, res: any) => {
     });
   }
 
-  // 4️⃣ Build context
+  
   const context = buildContext(contents);
 
-  // 5️⃣ Ask Gemini (grounded)
-  const prompt = `
-You are an assistant that answers ONLY using the provided context.
 
-Context:
+  const prompt = `
+You are an assistant helping a user recall knowledge from their saved content.
+
+IMPORTANT:
+- The context contains TITLES and LINKS of content the user saved.
+- These are REFERENCES, not full explanations.
+- You should infer explanations based on what these items are about.
+- Use the context to ground your answer and avoid hallucination.
+- if you can't summarize  it then atleast provide the links related to the question.
+
+Context (saved content):
 ${context}
 
 Question:
 ${question}
 
 Rules:
-- If the answer is not in the context, say "I don't know based on your saved content".
-- Be concise and clear.
+- Base your answer on what the saved content implies.
+- If NONE of the context is relevant, say:
+  "I don't know based on your saved content."
+- Be clear, concise, and helpful.
 `;
 
-//   const answer = await askGemini(prompt); 
-const answer = "This is a placeholder answer from Gemini based on the provided context."; // Placeholder
 
-  res.json({
-    answer,
-    sources: contents.map(c => ({
-      title: c.title,
-      link: c.link,
-    })),
-  });
+for await (const chunk of askGeminiStream(prompt)) {
+      res.write(`data: ${chunk}\n\n`);
+    }
+
+    res.write("data: [DONE]\n\n");
+    res.end();
+
+ 
 });

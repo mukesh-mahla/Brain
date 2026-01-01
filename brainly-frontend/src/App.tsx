@@ -6,6 +6,7 @@ import { Signup } from "./pages/signup";
 import { DashBoard } from "./pages/dashBoard";
 import "./App.css"
 import LandingPage from "./pages/LandingPage";
+import { RAGpage } from "./pages/askAI";
 
 function app(){
   return <BrowserRouter>
@@ -14,6 +15,7 @@ function app(){
     <Route path="/signup" element={<Signup/>}/>
     <Route path="/signin" element={<Signin/>}/>
     <Route path="/dashboard" element={<DashBoard/>}/>
+    <Route path="/askai" element={<RAGpage/>}/>
   </Routes>
        </BrowserRouter> 
  
