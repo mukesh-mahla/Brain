@@ -49,7 +49,7 @@ useEffect(()=>{
 },[])
 
 
-  return <div>
+  return <div >
     <div className='fixed'><Sidebar/></div>
     <div className='p-4 ml-72 bg-grey-200 min-h-screen '>
       <CreateContentmodal open ={ModalOpen} onClose={()=>{setModalOpen(false)}}/>
