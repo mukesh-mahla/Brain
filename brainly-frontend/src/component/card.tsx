@@ -17,7 +17,7 @@ export const Card = ({ link, title, type }: CardProps) => {
         <span className="font-medium">{title}</span>
 
         <a
-          href={link}
+          href={link.replace("embed","watch")}
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-400 hover:text-gray-600"

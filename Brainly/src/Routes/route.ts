@@ -251,6 +251,7 @@ IMPORTANT:
 - You should infer explanations based on what these items are about.
 - Use the context to ground your answer and avoid hallucination.
 - if you can't summarize  it then atleast provide the links related to the question.
+- add your knowledge about my contents for the quetion asked 
 
 Context (saved content):
 ${context}

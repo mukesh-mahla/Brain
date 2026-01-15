@@ -10,6 +10,7 @@ import { Sidebar } from '../component/sidebar'
 import { useContent } from '../hooks/useContent'
 import { shareBrain } from '../hooks/shareBrain'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -17,6 +18,8 @@ import axios from 'axios'
 
 
 export function DashBoard() {
+  const navigate = useNavigate()
+  
    const [ModalOpen,setModalOpen] = useState(false)
    const {contents,refresh} = useContent()
 
@@ -50,6 +53,11 @@ useEffect(()=>{
 
 
   return <div >
+    <div className='flex justify-center p-2  inset-x-0 bottom-10 items-center fixed '>
+      <Button varient='primary' text='Ask AI' size="md" onClick={()=>{
+       navigate("/askai")
+      }}></Button>
+    </div>
     <div className='fixed'><Sidebar/></div>
     <div className='p-4 ml-72 bg-grey-200 min-h-screen '>
       <CreateContentmodal open ={ModalOpen} onClose={()=>{setModalOpen(false)}}/>
