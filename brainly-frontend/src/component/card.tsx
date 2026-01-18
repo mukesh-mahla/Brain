@@ -1,43 +1,68 @@
-import { ShareIcon } from "../icons/share"
-import { useEffect } from "react"
-import { getYouTubeEmbedUrl } from "../utils/youtybeUrl"
+import { ShareIcon } from "../icons/share";
+import { useEffect } from "react";
+import { getYouTubeEmbedUrl } from "../utils/youtybeUrl";
 
 interface CardProps {
-  link: string
-  title: string
-  type: "twitter" | "youtube"
+  link: string;
+  title: string;
+  type: "twitter" | "youtube";
+  summary: string;
+  tags: string[];
 }
 
-export const Card = ({ link, title, type }: CardProps) => {
+export const Card = ({ link, title, type, summary, tags }: CardProps) => {
   return (
-    <div className="p-4 bg-white rounded-md shadow border border-slate-200 min-w-72 min-h-80">
+    <div className="p-5 bg-white rounded-xl shadow-sm border border-slate-200 w-80 flex flex-col">
 
-      {/* Header */}
-      <div className="flex justify-between items-center text-sm mb-2">
-        <span className="font-medium">{title}</span>
+      {/* HEADER */}
+      <div className="flex justify-between items-start mb-2">
+        <h3 className="font-semibold text-slate-900 leading-snug">
+          {title}
+        </h3>
 
         <a
-          href={link.replace("embed","watch")}
+          href={link.replace("embed", "watch")}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-gray-400 hover:text-gray-600"
+          className="text-slate-400 hover:text-slate-600"
         >
           <ShareIcon size="md" />
         </a>
       </div>
 
-      {/* Content */}
-      <div className="pt-2">
+      {/* SUMMARY */}
+      {summary && (
+        <p className="text-sm text-slate-600 leading-relaxed mb-3">
+          {summary}
+        </p>
+      )}
+
+      {/* TAGS */}
+      {tags?.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {tags.map((tag) => (
+            <span
+              key={tag}
+              className="
+                px-2 py-1 text-xs rounded-full
+                bg-indigo-50 text-indigo-600
+                border border-indigo-100
+              "
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* CONTENT */}
+      <div className="mt-auto">
         {type === "youtube" && <YoutubeEmbed link={link} />}
         {type === "twitter" && <TwitterEmbed link={link} />}
       </div>
-
     </div>
-  )
-}
-
-
-
+  );
+};
 
 
 export function YoutubeEmbed({ link }: { link: string }) {

@@ -5,7 +5,7 @@ import { index } from '../vector';
 import { getEmbedding } from '../embedding';
 import { userAuth } from '../middleware';
 import { Content, Link, User } from '../db';
-import { buildContext, randon } from '../utils';
+import { buildContext, randon, system_prompt } from '../utils';
 import { askGeminiStream } from './askGemini';
 
 export const router = express.Router();
@@ -48,17 +48,27 @@ router.post('/signin',async(req,res)=>{
 })
 
 router.post('/addcontent',userAuth,async(req,res)=>{
- const {link,type,title} = req.body
+ const {link,type,title,tags,summary} = req.body
  //@ts-ignore
 const userId = req.userId
  const newContent= await Content.create({
-  link,type,title,tags:[],userId
+  link,
+  type,
+  title,
+  tags,
+  userId,
+  summary
  })
+
+const rawlink = link.replace("embed", "watch");
+console.log("raw link", rawlink);
 
 const textForEmbedding = `
 Title: ${title}
 Type: ${type}
-Link: ${link}
+Link: ${rawlink}
+tags: ${tags.join(", ")}
+summary: ${summary}
 `;
 
 const embedding = await getEmbedding(textForEmbedding);
@@ -242,29 +252,8 @@ router.post("/rag", userAuth, async (req: any, res: any) => {
   const context = buildContext(contents);
 
 
-  const prompt = `
-You are an assistant helping a user recall knowledge from their saved content.
-
-IMPORTANT:
-- The context contains TITLES and LINKS of content the user saved.
-- These are REFERENCES, not full explanations.
-- You should infer explanations based on what these items are about.
-- Use the context to ground your answer and avoid hallucination.
-- if you can't summarize  it then atleast provide the links related to the question.
-- add your knowledge about my contents for the quetion asked 
-
-Context (saved content):
-${context}
-
-Question:
-${question}
-
-Rules:
-- Base your answer on what the saved content implies.
-- If NONE of the context is relevant, say:
-  "I don't know based on your saved content."
-- Be clear, concise, and helpful.
-`;
+  const prompt = `${system_prompt} this is context:${context}
+  and this is the question that user asked:${question} `
 
 
 for await (const chunk of askGeminiStream(prompt)) {

@@ -13,10 +13,6 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
 
-
-
-
-
 export function DashBoard() {
   const navigate = useNavigate()
   
@@ -80,12 +76,12 @@ useEffect(()=>{
   />
 </div>
 <div>
-{searchResults.map(({ type, link, title }) => (
-  <Card type={type} link={link} title={title} />
+{searchResults.map(({ type, link, title,summary,tags }) => (
+  <Card type={type} link={link} title={title} summary={summary} tags={tags}  />
 ))}
 </div>
         <div className='flex gap-2 flex-wrap pt-2'>   
-          {contents.map(({type,link,title})=><Card  type={type} link={link} title={title}/>)}
+          {contents.map(({type,link,title,tags,summary})=><Card  type={type} link={link} title={title} summary={summary} tags={tags}/>)}
         </div>
     </div>
   </div>
