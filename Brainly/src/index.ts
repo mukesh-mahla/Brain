@@ -25,7 +25,7 @@ async function startServer() {
     const conn = await mongoose.connect(process.env.MONGO_URL!);
 
     console.log("MongoDB connected");
-    console.log("Database name:", conn.connection.name); // MUST print Brainly
+   
 
     app.listen(3000, () => {
       console.log("Server started at 3000");
