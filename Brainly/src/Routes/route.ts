@@ -60,13 +60,13 @@ const userId = req.userId
   summary
  })
 
-const rawlink = link.replace("embed", "watch");
-console.log("raw link", rawlink);
+
+
 
 const textForEmbedding = `
 Title: ${title}
 Type: ${type}
-Link: ${rawlink}
+Link: ${link}
 tags: ${tags.join(", ")}
 summary: ${summary}
 `;

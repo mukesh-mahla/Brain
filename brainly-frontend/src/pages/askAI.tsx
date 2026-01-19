@@ -36,7 +36,7 @@ export function RAGpage() {
       const lines = chunk.split("\n");
 
       for (const line of lines) {
-        if (line.startsWith("data: ")) {
+        if (line.startsWith("data: ") || line.startsWith("") ) {
           const text = line.replace("data: ", "");
           if (text === "[DONE]") {
             setLoading(false);
