@@ -48,43 +48,110 @@ useEffect(()=>{
 },[])
 
 
-  return <div >
-    <div className='flex justify-center p-2  inset-x-0 bottom-10 items-center fixed '>
-      <Button varient='primary' text='Ask AI' size="md" onClick={()=>{
-       navigate("/askai")
-      }}></Button>
+ return (
+  <div className="min-h-screen bg-stone-50">
+
+    {/* SIDEBAR */}
+    <div className="fixed inset-y-0 left-0 w-64">
+      <Sidebar />
     </div>
-    <div className='fixed'><Sidebar/></div>
-    <div className='p-4 ml-72 bg-grey-200 min-h-screen '>
-      <CreateContentmodal open ={ModalOpen} onClose={()=>{setModalOpen(false)}}/>
-        <div className='flex  justify-end gap-4 '>
-          <Button varient='secondary' text='share brain' size='sm' startIcon={<ShareIcon size='md'/>} onClick={shareBrain}/>
-          <Button varient='primary' text='add content' size='sm' startIcon={<PlusIcon size='md'/>} onClick={()=>{setModalOpen(true)}}/>
-       </div>
-       <div className="flex gap-2 m-4">
-  <input
-    value={query}
-    onChange={(e) => setQuery(e.target.value)}
-    placeholder="Search by meaning (e.g. auth notes)"
-    className="border p-2 rounded w-full "
-  />
-  <Button
-    text="Search"
-    varient="primary"
-    size="sm"
-    onClick={handleSearch}
-  />
-</div>
-<div>
-{searchResults.map(({ type, link, title,summary,tags }) => (
-  <Card type={type} link={link} title={title} summary={summary} tags={tags}  />
-))}
-</div>
-        <div className='flex gap-2 flex-wrap pt-2'>   
-          {contents.map(({type,link,title,tags,summary})=><Card  type={type} link={link} title={title} summary={summary} tags={tags}/>)}
+
+    {/* MAIN AREA */}
+    <div className="ml-64 min-h-screen flex flex-col">
+
+      {/* TOP COMMAND BAR */}
+      <div className="sticky top-0 z-20 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+
+        {/* LEFT: SEARCH + ACTIONS */}
+        <div className="flex items-center gap-4 flex-1">
+
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search your brain by meaning..."
+            className="
+              flex-1 px-4 py-2 rounded-lg border border-slate-300
+              focus:outline-none focus:ring-2 focus:ring-indigo-500
+            "
+          />
+
+          <Button
+            text="Search"
+            varient="secondary"
+            size="sm"
+            onClick={handleSearch}
+          />
+
+          <Button
+            text="Ask AI"
+            varient="primary"
+            size="sm"
+            onClick={() => navigate("/askai")}
+          />
+
+          <Button
+            varient="primary"
+            text="Add"
+            size="sm"
+            startIcon={<PlusIcon size="md" />}
+            onClick={() => setModalOpen(true)}
+          />
         </div>
+
+        {/* RIGHT: SHARE BRAIN */}
+        <div className="flex items-center gap-3 ml-6 border-l border-slate-200 pl-6">
+          <Button
+            varient="secondary"
+            text="Share Brain"
+            size="sm"
+            startIcon={<ShareIcon size="md" />}
+            onClick={shareBrain}
+          />
+        </div>
+      </div>
+
+      {/* CONTENT AREA */}
+      <div className="flex-1 px-8 py-6">
+
+        <CreateContentmodal
+          open={ModalOpen}
+          onClose={() => setModalOpen(false)}
+        />
+
+        {/* SEARCH MODE INDICATOR */}
+        {searchResults.length > 0 && (
+          <div className="mb-4 text-sm text-slate-500">
+            Showing results for “{query}”
+            <button
+              onClick={() => setSearchResults([])}
+              className="ml-2 text-indigo-600 hover:underline"
+            >
+              Clear
+            </button>
+          </div>
+        )}
+
+        {/* CARDS GRID (SINGLE SOURCE OF TRUTH) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {(searchResults.length > 0 ? searchResults : contents).map(
+            ({ _id, type, link, title, summary, tags }) => (
+              <Card
+                key={_id}
+                type={type}
+                link={link}
+                title={title}
+                summary={summary}
+                tags={tags}
+              />
+            )
+          )}
+        </div>
+      </div>
     </div>
   </div>
+);
+
+
 }
 
 
