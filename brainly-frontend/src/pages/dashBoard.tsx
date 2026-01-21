@@ -132,20 +132,21 @@ useEffect(()=>{
         )}
 
         {/* CARDS GRID (SINGLE SOURCE OF TRUTH) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {(searchResults.length > 0 ? searchResults : contents).map(
-            ({ _id, type, link, title, summary, tags }) => (
-              <Card
-                key={_id}
-                type={type}
-                link={link}
-                title={title}
-                summary={summary}
-                tags={tags}
-              />
-            )
-          )}
-        </div>
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+  {(searchResults.length > 0 ? searchResults : contents).map(
+    ({ _id, type, link, title, summary, tags }) => (
+      <div key={_id} className="break-inside-avoid">
+        <Card
+          type={type}
+          link={link}
+          title={title}
+          summary={summary}
+          tags={tags}
+        />
+      </div>
+    )
+  )}
+</div>
       </div>
     </div>
   </div>

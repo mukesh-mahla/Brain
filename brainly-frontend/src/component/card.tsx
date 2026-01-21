@@ -1,6 +1,8 @@
 import { ShareIcon } from "../icons/share";
 import { useEffect } from "react";
 import { getYouTubeEmbedUrl } from "../utils/youtybeUrl";
+import { DeleteIcon } from "../icons/deleteIcon";
+
 
 interface CardProps {
   link: string;
@@ -12,34 +14,45 @@ interface CardProps {
 
 export const Card = ({ link, title, type, summary, tags }: CardProps) => {
   return (
-    <div className="p-5 bg-white rounded-xl shadow-sm border border-slate-200 w-80 flex flex-col">
-
+    <div
+      className={`p-5 bg-white rounded-xl border border-slate-200
+        w-80 flex flex-col gap-3 
+        transition hover:shadow-md `}
+      
+    >
       {/* HEADER */}
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="font-semibold text-slate-900 leading-snug">
-          {title}
-        </h3>
+      <div className="flex justify-between items-start">
 
-        <a
-          href={link.replace("embed", "watch")}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-slate-400 hover:text-slate-600"
-        >
-          <ShareIcon size="md" />
-        </a>
-      </div>
+  <div className="font-semibold text-left text-slate-900 leading-snug line-clamp-2 ">
+    {title}
+  </div>
+
+
+  <div className="flex items-start gap-4">
+    <a
+      href={link.replace("embed", "watch")}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-slate-400 hover:text-slate-600 shrink-0 pl-1"
+    >
+      <ShareIcon size="md" />
+    </a>
+    <div>
+      <DeleteIcon />
+    </div>
+  </div>
+</div>
 
       {/* SUMMARY */}
       {summary && (
-        <p className="text-sm text-slate-600 leading-relaxed mb-3">
+        <p className="text-sm text-slate-600 leading-relaxed line-clamp-3">
           {summary}
         </p>
       )}
 
       {/* TAGS */}
-      {tags?.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
+      {tags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
             <span
               key={tag}
@@ -55,8 +68,8 @@ export const Card = ({ link, title, type, summary, tags }: CardProps) => {
         </div>
       )}
 
-      {/* CONTENT */}
-      <div className="mt-auto">
+      {/* MEDIA */}
+      <div className="pt-2 border-t border-slate-100 ">
         {type === "youtube" && <YoutubeEmbed link={link} />}
         {type === "twitter" && <TwitterEmbed link={link} />}
       </div>
@@ -65,22 +78,27 @@ export const Card = ({ link, title, type, summary, tags }: CardProps) => {
 };
 
 
+
 export function YoutubeEmbed({ link }: { link: string }) {
-  const embedUrl = getYouTubeEmbedUrl(link)
+  const embedUrl = getYouTubeEmbedUrl(link);
 
   if (!embedUrl) {
-    return <p className="text-sm text-gray-500">Invalid YouTube link</p>
+    return <p className="text-sm text-slate-500">Invalid YouTube link</p>;
   }
 
   return (
-    <iframe
-      className="w-full aspect-video rounded"
-      src={embedUrl}
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
-    />
-  )
+    <div className="w-full rounded-lg overflow-hidden bg-black">
+      <iframe
+        className="w-full h-full"   
+        src={embedUrl}
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
+    </div>
+  );
 }
+
 
 
 
