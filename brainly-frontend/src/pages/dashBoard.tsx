@@ -137,6 +137,7 @@ useEffect(()=>{
     ({ _id, type, link, title, summary, tags }) => (
       <div key={_id} className="break-inside-avoid">
         <Card
+          id={_id}
           type={type}
           link={link}
           title={title}

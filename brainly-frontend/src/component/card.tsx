@@ -2,9 +2,11 @@ import { ShareIcon } from "../icons/share";
 import { useEffect } from "react";
 import { getYouTubeEmbedUrl } from "../utils/youtybeUrl";
 import { DeleteIcon } from "../icons/deleteIcon";
+import { useContent } from "../hooks/useContent";
 
 
 interface CardProps {
+  id: string;
   link: string;
   title: string;
   type: "twitter" | "youtube";
@@ -12,7 +14,8 @@ interface CardProps {
   tags: string[];
 }
 
-export const Card = ({ link, title, type, summary, tags }: CardProps) => {
+export const Card = ({ id,link, title, type, summary, tags }: CardProps) => {
+  const { deleteContent } = useContent();
   return (
     <div
       className={`p-5 bg-white rounded-xl border border-slate-200
@@ -28,17 +31,18 @@ export const Card = ({ link, title, type, summary, tags }: CardProps) => {
   </div>
 
 
-  <div className="flex items-start gap-4">
+  <div className="flex  items-end gap-4">
+    <div> </div>
     <a
       href={link.replace("embed", "watch")}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-slate-400 hover:text-slate-600 shrink-0 pl-1"
+      className="text-slate-400 -translate-y-1 hover:text-slate-600 shrink-0 pl-1"
     >
       <ShareIcon size="md" />
     </a>
-    <div>
-      <DeleteIcon />
+    <div >
+      <DeleteIcon onclick={deleteContent} id={id} />
     </div>
   </div>
 </div>
