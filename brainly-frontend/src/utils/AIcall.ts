@@ -1,9 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
 import { INGESTION_SYSTEM_PROMPT } from "./prompt";
+
+import type { AiRes } from "../component/CreateContantModel";
+
 const api_key = import.meta.env.VITE_AI_API_KEY;
 const ai = new GoogleGenAI({ apiKey: api_key });
 
-export async function getTags(prompt: string): Promise<string> {
+export async function getTags(prompt: string): Promise<AiRes> {
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
     contents: prompt,
