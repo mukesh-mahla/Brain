@@ -8,10 +8,10 @@ import cors from "cors";
 import { router } from "./Routes/route";
 
 const app = express();
-
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+
 
 app.use("/", router);
 
@@ -19,11 +19,11 @@ async function startServer() {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URL!);
 
-    console.log("MongoDB connected");
+   
    
 
     app.listen(3000, () => {
-      console.log("Server started at 3000");
+      
     });
   } catch (err) {
     console.error("MongoDB connection failed:", err);
