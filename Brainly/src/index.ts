@@ -8,7 +8,7 @@ import cors from "cors";
 import { router } from "./Routes/route";
 
 const app = express();
-app.use(cors());
+app.use(cors({origin:["https://brain-three-sage.vercel.app"],credentials:true}));
 app.use(express.json());
 app.use(cookieParser());
 
