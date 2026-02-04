@@ -18,10 +18,6 @@ app.use("/", router);
 async function startServer() {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URL!);
-
-   
-   
-
     app.listen(3000, () => {
       
     });
