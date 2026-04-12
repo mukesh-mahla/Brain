@@ -23,7 +23,7 @@ export function Signup() {
       lastName: lastNameRef.current?.value,
       email: emailRef.current?.value,
       password: passwordRef.current?.value,
-    });
+    },{withCredentials:true});
 
     navigate("/signin");
   } catch (error) {
