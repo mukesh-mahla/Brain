@@ -25,7 +25,7 @@ export function useContent(){
     );
 
    
-    setContents(prev => prev.filter(item => item._id !== id));
+    setContents(prev => prev.filter(item => item.id !== id));
   };
 
     useEffect(()=>{
