@@ -1,57 +1,10 @@
-import {Schema,model} from "mongoose";
+import "dotenv/config";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@prisma/client";
 
-const userSchema = new Schema({
-    firstName :{
-        type:String,
-        required:true
-    },
-    lastName :{
-        type:String,
-        required:true
-    },
-    email:{
-        type:String,
-        unique:true,
-        required:true
-    },
-    password:{
-        type:String,
-        unique:true,
-        required:true
-    }
+const connectionString = `${process.env.DATABASE_URL}`;
 
-}) 
-const contentSchema = new Schema({
-    link:String,
-    type:String ,
-    title:String,
-    tags:[String],
-    summary:String,
-    userId:{
-        type:Schema.Types.ObjectId,
-        ref:"User"
-    }
-    
-})
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
 
-
-const tagsSchema = new Schema({
-    title:String
-})
-
-const linkSchema = new Schema({
-    hash:String,
-    userId:{
-        type:Schema.Types.ObjectId,
-        ref:"User",
-
-    }
-})
-
-
-    
-export const User = model('user',userSchema)
-export const Content = model('content',contentSchema)
-export const Tags = model('tags',tagsSchema)
-export const Link = model('link',linkSchema)
-
+export { prisma };
