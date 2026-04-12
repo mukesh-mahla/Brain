@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Button } from "../component/button";
 import { Input } from "../component/Input";
 import axios from "axios";
@@ -7,21 +7,27 @@ import { useNavigate } from "react-router-dom";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export function Signin() {
+  const [loading, setLoading] = useState(false)
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   async function signin() {
-    await axios.post(
-      BACKEND_URL + "/signin",
-      {
-        email: emailRef.current?.value,
-        password: passwordRef.current?.value,
-      },
-      { withCredentials: true }
-    );
+    setLoading(true)
+    try {
+      await axios.post(BACKEND_URL + "/signin",
+        {
+          email: emailRef.current?.value,
+          password: passwordRef.current?.value,
+        },
+        { withCredentials: true }
+      );
 
-    navigate("/dashboard");
+      navigate("/dashboard");
+    } catch (e) {
+      console.error(e);
+      alert("Signin failed");
+    } finally { setLoading(false) }
   }
 
   return (
@@ -51,11 +57,12 @@ export function Signin() {
         {/* Button */}
         <div className="mt-6">
           <Button
+            disabled={loading}
             onClick={signin}
             fullWidth
             varient="primary"
             size="md"
-            text="Sign In"
+            text={loading ? "singing in..." : "sing in"}
           />
         </div>
 

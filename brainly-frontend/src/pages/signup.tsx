@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Button } from "../component/button";
 import { Input } from "../component/Input";
 import axios from "axios";
@@ -7,13 +7,17 @@ import { useNavigate } from "react-router-dom";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export function Signup() {
+  const [loading,setLoading] = useState(false)
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  async function signup() {
+ async function signup() {
+  setLoading(true);
+
+  try {
     await axios.post(BACKEND_URL + "/signup", {
       firstName: firstNameRef.current?.value,
       lastName: lastNameRef.current?.value,
@@ -22,7 +26,13 @@ export function Signup() {
     });
 
     navigate("/signin");
+  } catch (error) {
+    console.error(error);
+    alert("Signup failed"); // you can improve this later
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center px-4">
@@ -53,11 +63,13 @@ export function Signup() {
         {/* Button */}
         <div className="mt-6">
           <Button
+           disabled={loading}
             onClick={signup}
             fullWidth
             varient="primary"
             size="md"
-            text="Create Account"
+            text={loading ? "Creating..." : "Create Account"}
+          
           />
         </div>
 
