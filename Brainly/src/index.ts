@@ -15,10 +15,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/", router);
 
+const PORT = process.env.PORT||3000
+
 async function startServer() {
   try {
     await prisma.$connect();
-    app.listen(3000, () => {
+    app.listen(PORT, () => {
       console.log("Server running on port 3000");
     });
   } catch (err) {
