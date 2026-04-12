@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
  const VITE_BACKEND_URL  =  import.meta.env.VITE_BACKEND_URL
 
  type Content = {
-  _id: string;
+  id: string;
   type: "twitter" | "youtube";
   link: string;
   title: string;
