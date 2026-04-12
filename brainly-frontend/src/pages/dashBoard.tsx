@@ -134,8 +134,8 @@ useEffect(()=>{
         {/* CARDS GRID (SINGLE SOURCE OF TRUTH) */}
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
   {(searchResults.length > 0 ? searchResults : contents).map(
-    ({ _id, type, link, title, summary, tags }) => (
-      <div key={_id} className="break-inside-avoid">
+    ({ id, type, link, title, summary, tags }) => (
+      <div key={id} className="break-inside-avoid">
         <Card
           id={id}
           type={type}
