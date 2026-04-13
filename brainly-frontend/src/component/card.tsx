@@ -12,10 +12,11 @@ interface CardProps {
   type: "twitter" | "youtube";
   summary: string;
   tags: string[];
+  onDelete: (id: string) => void;
 }
 
-export const Card = ({ id,link, title, type, summary, tags }: CardProps) => {
-  const { deleteContent } = useContent();
+export const Card = ({ id,link, title, type, summary, tags,onDelete }: CardProps) => {
+  
   return (
     <div
       className={`p-5 bg-white rounded-xl border border-slate-200
@@ -42,7 +43,7 @@ export const Card = ({ id,link, title, type, summary, tags }: CardProps) => {
       <ShareIcon size="md" />
     </a>
     <div >
-      <DeleteIcon onclick={deleteContent} id={id} />
+      <DeleteIcon onclick={onDelete} id={id} />
     </div>
   </div>
 </div>
@@ -55,7 +56,7 @@ export const Card = ({ id,link, title, type, summary, tags }: CardProps) => {
       )}
 
       {/* TAGS */}
-      {tags.length > 0 && (
+      {(tags || []).length > 0 && (
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
             <span
@@ -122,7 +123,7 @@ export function TwitterEmbed({ link }: { link: string }) {
 
   return (
     <blockquote className="twitter-tweet">
-      <a href={link.replace("x.com", "twitter.com")}></a>
+      <a href={(link || "").replace("x.com", "twitter.com")}></a>
     </blockquote>
   )
 }

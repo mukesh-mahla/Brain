@@ -33,6 +33,7 @@ export function CreateContentmodal({
   const [AxiosError, setError] = useState<string | null>(null)
 
   async function addContent() {
+    setError(null);
     const title = titleRef.current?.value;
     const link = linkRef.current?.value;
 
@@ -46,6 +47,14 @@ export function CreateContentmodal({
     const finalLink =
       type === ContentType.youtube ? getYouTubeEmbedUrl(link) : link;
 
+      if (
+  type === ContentType.youtube &&
+  !finalLink?.includes("youtube.com") &&
+  !finalLink?.includes("youtu.be")
+) {
+  setError("Enter a valid YouTube URL");
+  return;
+}
     setLoading(true);
 
     const ingestionPrompt = `
@@ -74,9 +83,9 @@ Return ONLY valid JSON in this format:
       summary = res.summary;
       tags = res.tags;
     } catch {
-      setError("cant able to generate a summary")
+      setError("cant able to generate a summary,storing without summary")
       console.warn("AI failed — saving without enrichment");
-      
+
     }
 
 

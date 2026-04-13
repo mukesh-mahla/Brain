@@ -17,7 +17,7 @@ export function DashBoard() {
   const navigate = useNavigate()
   
    const [ModalOpen,setModalOpen] = useState(false)
-   const {contents,refresh} = useContent()
+   const {contents,refresh,deleteContent} = useContent()
 
    const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -140,9 +140,10 @@ useEffect(()=>{
           id={id}
           type={type}
           link={link}
-          title={title || []}
+          title={title }
           summary={summary || ""}
-          tags={tags}
+          tags={tags || []}
+          onDelete={deleteContent}
         />
       </div>
     )
