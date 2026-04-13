@@ -21,6 +21,6 @@ export function getYouTubeEmbedUrl(url: string): string | null {
 
     return `https://www.youtube.com/embed/${videoId}`
   } catch {
-    return null
+    return ""
   }
 }
