@@ -30,21 +30,30 @@ export function CreateContentmodal({
   const linkRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState<ContentType>(ContentType.youtube);
   const [loading, setLoading] = useState(false);
+  const [AxiosError, setError] = useState<string | null>(null)
 
   async function addContent() {
     const title = titleRef.current?.value;
     const link = linkRef.current?.value;
 
-    if (!title || !link) return;
+
+
+
+    if (!title || !link) {
+      setError("Title and link are required");
+      return;
+    }
+    const finalLink =
+      type === ContentType.youtube ? getYouTubeEmbedUrl(link) : link;
 
     setLoading(true);
 
     const ingestionPrompt = `
-You are analyzing content a user wants to save in their second brain.
+      You are analyzing content a user wants to save in their second brain.
 
-Title: ${title}
-Type: ${type}
-Link: ${link}
+        Title: ${title}
+        Type: ${type}
+        Link: ${link}
 
 Generate:
 - A concise 2–3 sentence summary explaining why this content might be useful
@@ -65,20 +74,26 @@ Return ONLY valid JSON in this format:
       summary = res.summary;
       tags = res.tags;
     } catch {
+      setError("cant able to generate a summary")
       console.warn("AI failed — saving without enrichment");
+      
     }
 
-    const finalLink =
-      type === ContentType.youtube ? getYouTubeEmbedUrl(link) : link;
 
-    await axios.post(
-      `${BACKEND_URL}/addcontent`,
-      { title, link: finalLink, type, summary, tags },
-      { withCredentials: true }
-    );
 
+    try {
+      await axios.post(
+        `${BACKEND_URL}/addcontent`,
+        { title, link: finalLink, type, summary, tags },
+        { withCredentials: true }
+      );
+      onClose();
+    } catch (e: any) {
+      setError(e.response?.data || e.message)
+      return
+    }
     setLoading(false);
-    onClose();
+
   }
 
   if (!open) return null;
@@ -116,10 +131,9 @@ Return ONLY valid JSON in this format:
                 onClick={() => setType(t)}
                 className={`
                   px-3 py-2 rounded-lg text-sm border transition
-                  ${
-                    type === t
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "bg-white text-slate-600 border-slate-300 hover:bg-slate-50"
+                  ${type === t
+                    ? "bg-indigo-600 text-white border-indigo-600"
+                    : "bg-white text-slate-600 border-slate-300 hover:bg-slate-50"
                   }
                 `}
               >
@@ -134,14 +148,15 @@ Return ONLY valid JSON in this format:
           <Input ref={titleRef} placeholder="Title (what is this about?)" />
           <Input ref={linkRef} placeholder="Paste the link here" />
         </div>
-
+        {AxiosError && <p className="text-red-500 text-xs">{AxiosError}</p>}
         {/* ACTION */}
         <div className="mt-6 flex justify-end">
           <Button
+            loading={loading}
             onClick={addContent}
             varient="primary"
             size="md"
-            text={loading ? "Thinking..." : "Save to Brain"}
+            text={loading ? "Thinking..." : AxiosError ? "Try Again" : "Save to Brain"}
           />
         </div>
       </div>
