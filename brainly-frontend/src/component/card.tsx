@@ -34,7 +34,7 @@ export const Card = ({ id,link, title, type, summary, tags }: CardProps) => {
   <div className="flex  items-end gap-4">
     <div> </div>
     <a
-      href={link.replace("embed", "watch")}
+      href={(link|| "").replace("embed", "watch")}
       target="_blank"
       rel="noopener noreferrer"
       className="text-slate-400 -translate-y-1 hover:text-slate-600 shrink-0 pl-1"
@@ -118,6 +118,7 @@ export function TwitterEmbed({ link }: { link: string }) {
       window.twttr.widgets.load()
     }
   }, [])
+  
 
   return (
     <blockquote className="twitter-tweet">

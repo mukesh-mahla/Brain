@@ -57,7 +57,7 @@ export function Signin() {
         {/* Button */}
         <div className="mt-6">
           <Button
-            disabled={loading}
+            loading={loading}
             onClick={signin}
             fullWidth
             varient="primary"
