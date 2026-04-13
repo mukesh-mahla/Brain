@@ -44,7 +44,7 @@ router.post('/signin', async (req, res) => {
 
   if (user && isMatched) {
     const token = jwt.sign({ id: user.id }, JWT_USER_SECRET);
-    res.cookie('token', token, { httpOnly: true });
+    res.cookie('token', token, { httpOnly: true,secure:true,sameSite:"none" });
     res.json({ msg: 'signin success' });
   } else {
     res.status(403).json({ msg: 'token expire' });
