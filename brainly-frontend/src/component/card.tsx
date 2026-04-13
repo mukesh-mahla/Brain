@@ -2,7 +2,7 @@ import { ShareIcon } from "../icons/share";
 import { useEffect } from "react";
 import { getYouTubeEmbedUrl } from "../utils/youtybeUrl";
 import { DeleteIcon } from "../icons/deleteIcon";
-import { useContent } from "../hooks/useContent";
+
 
 
 interface CardProps {
