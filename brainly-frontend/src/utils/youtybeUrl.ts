@@ -17,10 +17,10 @@ export function getYouTubeEmbedUrl(url: string): string | null {
         null
     }
 
-    if (!videoId) return null
+    if (!videoId) return url
 
     return `https://www.youtube.com/embed/${videoId}`
   } catch {
-    return ""
+    return url
   }
 }
