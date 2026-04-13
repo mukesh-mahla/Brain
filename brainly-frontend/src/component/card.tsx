@@ -1,5 +1,5 @@
 import { ShareIcon } from "../icons/share";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { getYouTubeEmbedUrl } from "../utils/youtybeUrl";
 import { DeleteIcon } from "../icons/deleteIcon";
 
@@ -13,9 +13,10 @@ interface CardProps {
   summary: string;
   tags: string[];
   onDelete: (id: string) => void;
+  
 }
 
-export const Card = ({ id,link, title, type, summary, tags,onDelete }: CardProps) => {
+export const Card = React.memo(({ id,link, title, type, summary, tags,onDelete }: CardProps) => {
   
   return (
     <div
@@ -43,7 +44,7 @@ export const Card = ({ id,link, title, type, summary, tags,onDelete }: CardProps
       <ShareIcon size="md" />
     </a>
     <div >
-      <DeleteIcon onclick={onDelete} id={id} />
+      <DeleteIcon onClick={()=>onDelete(id)}  />
     </div>
   </div>
 </div>
@@ -80,7 +81,7 @@ export const Card = ({ id,link, title, type, summary, tags,onDelete }: CardProps
       </div>
     </div>
   );
-};
+});
 
 
 
