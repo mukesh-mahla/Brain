@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 export function useContent(){
     const [contents,setContents] = useState<Content[]>([])
          function refresh (){
-              axios.get(`${VITE_BACKEND_URL}/document`,{withCredentials:true}).then((response)=>{setContents(response.data.content)})
+              axios.get(`${VITE_BACKEND_URL}/document`,{withCredentials:true}).then((response)=>{setContents(response.data.content || [])})
 
 }
 
@@ -22,10 +22,12 @@ export function useContent(){
     await axios.delete(
       `${VITE_BACKEND_URL}/delete/${id}`,
       { withCredentials: true }
+     
     );
 
-   
+    
     setContents(prev => prev.filter(item => item.id !== id));
+  
   };
 
     useEffect(()=>{
