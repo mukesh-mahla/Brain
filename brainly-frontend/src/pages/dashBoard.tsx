@@ -20,7 +20,7 @@ export function DashBoard() {
    const {contents,refresh} = useContent()
 
    const [query, setQuery] = useState("");
-   const [searchResults, setSearchResults] = useState(contents);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
 
 
    const handleSearch = async () => {
@@ -35,11 +35,11 @@ export function DashBoard() {
     { withCredentials: true }
   );
 
-  setSearchResults(res.data.contents);
+  setSearchResults(res.data.contents || []);
 };
 
 
-useEffect(()=>{
+useEffect(()=>{ 
   refresh();
 },[ModalOpen])
 
@@ -119,7 +119,7 @@ useEffect(()=>{
         />
 
         {/* SEARCH MODE INDICATOR */}
-        {searchResults.length > 0 && (
+        {(searchResults?.length ?? 0) > 0 && (
           <div className="mb-4 text-sm text-slate-500">
             Showing results for “{query}”
             <button
@@ -140,8 +140,8 @@ useEffect(()=>{
           id={id}
           type={type}
           link={link}
-          title={title}
-          summary={summary}
+          title={title || []}
+          summary={summary || ""}
           tags={tags}
         />
       </div>

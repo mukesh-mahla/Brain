@@ -61,8 +61,8 @@ router.post('/addcontent', userAuth, async (req, res) => {
       link,
       type,
       title,
-      tags,
-      summary,
+      tags:tags || [],
+      summary:summary || "",
       userId,
     },
   });
@@ -71,7 +71,7 @@ router.post('/addcontent', userAuth, async (req, res) => {
 Title: ${title}
 Type: ${type}
 Link: ${link}
-tags: ${tags.join(', ')}
+tags: ${(tags || []).join(', ')}
 summary: ${summary}
 `;
 
