@@ -72,10 +72,10 @@ export const ShareBrain = () => {
         ) : (
           contents.map((item) => (
             <div
-              key={item.id}
+              key={item.id} 
               className="break-inside-avoid transition hover:scale-[1.02]"
             >
-              <Card {...item} showActions={false} />
+              <Card {...item} showAction={false} />
             </div>
           ))
         )}
