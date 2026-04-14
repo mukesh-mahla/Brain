@@ -10,7 +10,7 @@ export function useShareBrain() {
     async function fetchShareUrl() {
       try {
         const Sharelink = await axios.post(`${VITE_BACKEND_URL}/brain/share`, { share: true }, { withCredentials: true })
-        const url = `${VITE_BACKEND_URL}/brain/${Sharelink.data.link}`;
+        const url = Sharelink.data.link;
         setShareLink(url);
       }
       catch (e) {
