@@ -217,7 +217,11 @@ router.post('/search', userAuth, async (req, res) => {
     .map((m) => m.id);
 
   const contents = await prisma.content.findMany({
-    where: { id: { in: ids } },
+    where: { 
+      id: {
+         in: ids
+         }
+     },
   });
 
   res.json({ contents });

@@ -47,14 +47,14 @@ export function CreateContentmodal({
     const finalLink =
       type === ContentType.youtube ? getYouTubeEmbedUrl(link) : link;
 
-      if (
-  type === ContentType.youtube &&
-  !finalLink?.includes("youtube.com") &&
-  !finalLink?.includes("youtu.be")
-) {
-  setError("Enter a valid YouTube URL");
-  return;
-}
+    if (
+      type === ContentType.youtube &&
+      !finalLink?.includes("youtube.com") &&
+      !finalLink?.includes("youtu.be")
+    ) {
+      setError("Enter a valid YouTube URL");
+      return;
+    }
     setLoading(true);
 
     const ingestionPrompt = `

@@ -1,9 +1,31 @@
 import axios from "axios";
-  const VITE_BACKEND_URL  =  import.meta.env.VITE_BACKEND_URL
+import { useEffect, useState } from "react";
 
-export async function shareBrain(){
-  const respone = await axios.post(`${VITE_BACKEND_URL}/brain/share`,{share:true},{withCredentials:true})
-const shareUrl = `${VITE_BACKEND_URL}/brain${respone.data.link}`
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
-return shareUrl
+export function useShareBrain() {
+  const [shareLink, setShareLink] = useState("")
+
+  useEffect(() => {
+    async function fetchShareUrl() {
+      try {
+        const Sharelink = await axios.post(`${VITE_BACKEND_URL}/brain/share`, { share: true }, { withCredentials: true })
+        const url = `${VITE_BACKEND_URL}/brain/${Sharelink.data.link}`;
+        setShareLink(url);
+      }
+      catch (e) {
+        console.error("Error generating share link", e);
+      }
+    }
+    fetchShareUrl()
+  }, [])
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shareLink)
+  }
+
+  return {
+    handleCopy,
+    shareLink
+  }
 }

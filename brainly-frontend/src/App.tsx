@@ -7,6 +7,7 @@ import { DashBoard } from "./pages/dashBoard";
 import "./App.css"
 import LandingPage from "./pages/LandingPage";
 import { RAGpage } from "./pages/askAI";
+import { ShareBrain } from "./pages/shareBrain";
 
 function app(){
   return <BrowserRouter>
@@ -16,6 +17,7 @@ function app(){
     <Route path="/signin" element={<Signin/>}/>
     <Route path="/dashboard" element={<DashBoard/>}/>
     <Route path="/askai" element={<RAGpage/>}/>
+    <Route path="/brain/:shareLink" element={<ShareBrain />} />
   </Routes>
        </BrowserRouter> 
  

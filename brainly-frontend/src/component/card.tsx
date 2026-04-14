@@ -10,44 +10,47 @@ interface CardProps {
   link: string;
   title: string;
   type: "twitter" | "youtube";
+  showAction?:boolean
   summary: string;
   tags: string[];
   onDelete: (id: string) => void;
-  
+
 }
 
-export const Card = React.memo(({ id,link, title, type, summary, tags,onDelete }: CardProps) => {
-  
+export const Card = React.memo(({ id, link, title, type,showAction=true, summary, tags, onDelete }: CardProps) => {
+
   return (
     <div
       className={`p-5 bg-white rounded-xl border border-slate-200
         w-80 flex flex-col gap-3 
         transition hover:shadow-md `}
-      
+
     >
       {/* HEADER */}
       <div className="flex justify-between items-start">
 
-  <div className="font-semibold text-left text-slate-900 leading-snug line-clamp-2 ">
-    {title}
-  </div>
+        <div className="font-semibold text-left text-slate-900 leading-snug line-clamp-2 ">
+          {title}
+        </div>
 
 
-  <div className="flex  items-end gap-4">
-    <div> </div>
-    <a
-      href={(link|| "").replace("embed", "watch")}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-slate-400 -translate-y-1 hover:text-slate-600 shrink-0 pl-1"
-    >
-      <ShareIcon size="md" />
-    </a>
-    <div >
-      <DeleteIcon onClick={()=>onDelete(id)}  />
-    </div>
-  </div>
-</div>
+        <div className="flex  items-end gap-4">
+          <div> </div>
+          <a
+            href={(link || "").replace("embed", "watch")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-slate-400 -translate-y-1 hover:text-slate-600 shrink-0 pl-1"
+          >
+            <ShareIcon size="md" />
+          </a>
+          <div >
+           {showAction && (
+  <DeleteIcon onClick={() => onDelete(id)} />
+)}
+          </div>
+        </div>
+      </div>
 
       {/* SUMMARY */}
       {summary && (
@@ -95,7 +98,7 @@ export function YoutubeEmbed({ link }: { link: string }) {
   return (
     <div className="w-full rounded-lg overflow-hidden bg-black">
       <iframe
-        className="w-full h-full"   
+        className="w-full h-full"
         src={embedUrl}
         loading="lazy"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -120,7 +123,7 @@ export function TwitterEmbed({ link }: { link: string }) {
       window.twttr.widgets.load()
     }
   }, [])
-  
+
 
   return (
     <blockquote className="twitter-tweet">

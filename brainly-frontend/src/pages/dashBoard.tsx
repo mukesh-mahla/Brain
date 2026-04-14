@@ -8,14 +8,14 @@ import { PlusIcon } from '../icons/plus'
 import { ShareIcon } from '../icons/share'
 import { Sidebar } from '../component/sidebar'
 import { useContent } from '../hooks/useContent'
-import { shareBrain } from '../hooks/shareBrain'
+import { useShareBrain } from '../hooks/shareBrain'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
 
-export function DashBoard() {
+export  function DashBoard() {
   const navigate = useNavigate()
-
+const {handleCopy} = useShareBrain()
   const [ModalOpen, setModalOpen] = useState(false)
   const { contents, refresh, deleteContent } = useContent()
   const [localContents, setLocalContents] = useState<any[]>([])
@@ -34,8 +34,6 @@ export function DashBoard() {
       await deleteContent(id);
     } catch (err) {
       console.error("Delete failed", err);
-
-
       refresh();
     }
   };
@@ -55,8 +53,6 @@ export function DashBoard() {
     } catch (err) {
       console.error("search failed")
     }
-
-
 
   };
 
@@ -130,7 +126,7 @@ export function DashBoard() {
               text="Share Brain"
               size="sm"
               startIcon={<ShareIcon size="md" />}
-              onClick={shareBrain}
+              onClick={handleCopy}
             />
           </div>
         </div>
