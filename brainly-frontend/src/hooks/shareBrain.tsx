@@ -20,8 +20,10 @@ export function useShareBrain() {
     fetchShareUrl()
   }, [])
 
+  const frontendLink ="brain-three-sage.vercel.app"
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(shareLink)
+    navigator.clipboard.writeText(`${frontendLink}//brain/${shareLink}`)
   }
 
   return {
