@@ -66,7 +66,7 @@ export const ShareBrain = () => {
       </div>
 
       {/* GRID */}
-      <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+      <div className="ml-4 columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
         {contents.length === 0 ? (
           <p className="text-gray-400">No content shared yet</p>
         ) : (
