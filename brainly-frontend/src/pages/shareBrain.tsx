@@ -53,7 +53,7 @@ export const ShareBrain = () => {
                 <Sidebar />
             </div>
             {/* HEADER */}
-            <div className="mb-8">
+            <div className="mb-8 ml-64">
                 <h1 className="text-3xl font-bold text-slate-900">
                     {userName ? `${userName}'s Brain 🧠` : "Shared Brain 🧠"}
                 </h1>
