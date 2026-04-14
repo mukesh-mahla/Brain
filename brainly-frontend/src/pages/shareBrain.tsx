@@ -44,44 +44,46 @@ export const ShareBrain = () => {
     }
 
     return (
-        <div className="min-h-screen bg-stone-50 px-8 py-6">
+        
+  <div className="min-h-screen bg-stone-50">
 
+    {/* SIDEBAR */}
+    <div className="fixed inset-y-0 left-0 w-64">
+      <Sidebar />
+    </div>
 
+    {/* MAIN AREA */}
+    <div className="ml-64 min-h-screen px-8 py-6">
 
-            {/* SIDEBAR */}
-            <div className="fixed inset-y-0 left-0 w-64">
-                <Sidebar />
+      {/* HEADER */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-slate-900">
+          {userName ? `${userName}'s Brain 🧠` : "Shared Brain 🧠"}
+        </h1>
+        <p className="text-slate-500 text-sm mt-1">
+          Public knowledge collection
+        </p>
+      </div>
+
+      {/* GRID */}
+      <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+        {contents.length === 0 ? (
+          <p className="text-gray-400">No content shared yet</p>
+        ) : (
+          contents.map((item) => (
+            <div
+              key={item.id}
+              className="break-inside-avoid transition hover:scale-[1.02]"
+            >
+              <Card {...item} showActions={false} />
             </div>
-            {/* HEADER */}
-            <div className="mb-8 ml-64">
-                <h1 className="text-3xl font-bold text-slate-900">
-                    {userName ? `${userName}'s Brain 🧠` : "Shared Brain 🧠"}
-                </h1>
-                <p className="text-slate-500 text-sm mt-1">
-                    Public knowledge collection
-                </p>
-            </div>
+          ))
+        )}
+      </div>
 
-            {/* GRID */}
-            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
-                {contents.length === 0 ? (
-                    <p className="text-gray-400">No content shared yet</p>
-                ) : contents.map(({ id, type, link, title, summary, tags }) => (
-                    <div key={id} className="break-inside-avoid">
-                        <Card
-                            id={id}
-                            type={type}
-                            link={link}
-                            title={title}
-                            summary={summary}
-                            tags={tags}
-                            showAction={false}
-                            onDelete={() => { }}
-                        />
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
+    </div>
+  </div>
+);
+    
 }
 
