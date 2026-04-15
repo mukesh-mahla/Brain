@@ -1,53 +1,39 @@
+// card.tsx
 import { ShareIcon } from "../icons/share";
 import React, { useEffect } from "react";
 import { getYouTubeEmbedUrl } from "../utils/youtybeUrl";
 import { DeleteIcon } from "../icons/deleteIcon";
-
-
 
 interface CardProps {
   id: string;
   link: string;
   title: string;
   type: "twitter" | "youtube";
-  showAction?:boolean
+  showAction?: boolean;
   summary: string;
   tags: string[];
   onDelete: (id: string) => void;
 }
 
-export const Card = React.memo(({ id, link, title, type,showAction=true, summary, tags, onDelete }: CardProps) => {
-
+export const Card = React.memo(({ id, link, title, type, showAction = true, summary, tags, onDelete }: CardProps) => {
   return (
-    <div
-      className={`p-5 bg-white rounded-xl border border-slate-200
-        w-80 flex flex-col gap-3 
-        transition hover:shadow-md `}
+    <div className="p-4 md:p-5 bg-white rounded-xl border border-slate-200 w-full flex flex-col gap-3 transition hover:shadow-md">
 
-    >
       {/* HEADER */}
-      <div className="flex justify-between items-start">
-
-        <div className="font-semibold text-left text-slate-900 leading-snug line-clamp-2 ">
+      <div className="flex justify-between items-start gap-2">
+        <div className="font-semibold text-left text-slate-900 leading-snug line-clamp-2 flex-1 min-w-0">
           {title}
         </div>
-
-
-        <div className="flex  items-end gap-4">
-          <div> </div>
+        <div className="flex items-center gap-3 shrink-0">
           <a
             href={(link || "").replace("embed", "watch")}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-400 -translate-y-1 hover:text-slate-600 shrink-0 pl-1"
+            className="text-slate-400 hover:text-slate-600"
           >
             <ShareIcon size="md" />
           </a>
-          <div >
-           {showAction && (
-  <DeleteIcon onClick={() => onDelete(id)} />
-)}
-          </div>
+          {showAction && <DeleteIcon onClick={() => onDelete(id)} />}
         </div>
       </div>
 
@@ -64,11 +50,7 @@ export const Card = React.memo(({ id, link, title, type,showAction=true, summary
           {tags.map((tag) => (
             <span
               key={tag}
-              className="
-                px-2 py-1 text-xs rounded-full
-                bg-indigo-50 text-indigo-600
-                border border-indigo-100
-              "
+              className="px-2 py-1 text-xs rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100"
             >
               {tag}
             </span>
@@ -77,15 +59,13 @@ export const Card = React.memo(({ id, link, title, type,showAction=true, summary
       )}
 
       {/* MEDIA */}
-      <div className="pt-2 border-t border-slate-100 ">
+      <div className="pt-2 border-t border-slate-100">
         {type === "youtube" && <YoutubeEmbed link={link} />}
         {type === "twitter" && <TwitterEmbed link={link} />}
       </div>
     </div>
   );
 });
-
-
 
 export function YoutubeEmbed({ link }: { link: string }) {
   const embedUrl = getYouTubeEmbedUrl(link);
@@ -95,7 +75,7 @@ export function YoutubeEmbed({ link }: { link: string }) {
   }
 
   return (
-    <div className="w-full rounded-lg overflow-hidden bg-black">
+    <div className="w-full rounded-lg overflow-hidden bg-black aspect-video">
       <iframe
         className="w-full h-full"
         src={embedUrl}
@@ -107,36 +87,20 @@ export function YoutubeEmbed({ link }: { link: string }) {
   );
 }
 
-
-
-
 declare global {
-  interface Window {
-    twttr?: any
-  }
+  interface Window { twttr?: any }
 }
 
 export function TwitterEmbed({ link }: { link: string }) {
   useEffect(() => {
-    if (window.twttr) {
-      window.twttr.widgets.load()
-    }
+    if (window.twttr) window.twttr.widgets.load()
   }, [])
 
-
   return (
-    <blockquote className="twitter-tweet">
-      <a href={(link || "").replace("x.com", "twitter.com")}></a>
-    </blockquote>
-  )
+    <div className="w-full overflow-x-auto">
+      <blockquote className="twitter-tweet">
+        <a href={(link || "").replace("x.com", "twitter.com")}></a>
+      </blockquote>
+    </div>
+  );
 }
-
-
-
-
-
-
-
-
-
-

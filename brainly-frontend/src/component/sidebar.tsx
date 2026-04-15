@@ -1,18 +1,26 @@
-
+// sidebar.tsx
 import { Logo } from "../icons/Logo";
 import { TwitterIcon } from "../icons/twitterIcon";
 import { YoutubeIcon } from "../icons/youtube";
 import { SidebarItem } from "./sideBarItem";
 
 export function Sidebar() {
-    return <div className="bg-white absolute top-0 left-o h-screen w-72 border-r-2">
-        <div className="flex text-2xl gap-6 pt-4 pl-4">
-            <div className="text-purple-600"><Logo /></div>
-            <div className="text-blue-900 font-semibold">Brainly</div>
+  return (
+    <div className="bg-white h-full w-full border-r border-slate-200 flex flex-col">
+
+      {/* LOGO */}
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-100">
+        <div className="text-purple-600 shrink-0">
+          <Logo />
         </div>
-        <div className="pt-6 pl-6">
-            <SidebarItem text="twitter" Icon={<TwitterIcon />} />
-            <SidebarItem text="youtube" Icon={<YoutubeIcon />} />
-        </div>
+        <div className="text-blue-900 font-semibold text-xl">Brainly</div>
+      </div>
+
+      {/* NAV ITEMS */}
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <SidebarItem text="Twitter" Icon={<TwitterIcon />} />
+        <SidebarItem text="YouTube" Icon={<YoutubeIcon />} />
+      </nav>
     </div>
+  );
 }
