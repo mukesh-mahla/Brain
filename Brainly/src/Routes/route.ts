@@ -97,28 +97,23 @@ router.get("/document", userAuth, async (req, res) => {
   // @ts-ignore
   const userId = req.userId;
 
- 
   const limit = Number(req.query.limit) || 10;
-  const cursorParam = req.query.cursor;
-  const cursor = typeof cursorParam === "string" ? cursorParam : undefined;
- 
+  const page = Number(req.query?.page) || 1;
+
+  const skip = (page - 1) * limit;
 
   const content = await prisma.content.findMany({
     where: { userId },
-
+    skip: skip,
     take: limit,
-    orderBy: {createdAt:"desc"},
-    ...(cursor && {
-      cursor: { id: cursor },
-      skip: 1,
-    }),
+    orderBy: { createdAt: "desc" },
   });
-  const nextCursor =
-    content.length === limit
-      ? content[content.length - 1].id
-      : null;
 
-  res.json({ content,nextCursor });
+  const total = await prisma.content.count({
+    where: { userId },
+  });
+
+  res.json({ content, page, totalPages: Math.ceil(total / limit) });
 });
 
 router.delete("/delete/:id", userAuth, async (req, res) => {
@@ -176,8 +171,9 @@ router.get("/brain/:shareLink", async (req, res) => {
     return;
   }
   const limit = Number(req.query.limit) || 10;
-  const cursorParam = req.query.cursor;
-  const cursor = typeof cursorParam === "string" ? cursorParam : undefined;
+  const page = Number(req.query?.page) || 1;
+
+  const skip = (page - 1) * limit;
 
   const user = await prisma.user.findUnique({
     where: { id: link.userId },
@@ -185,21 +181,20 @@ router.get("/brain/:shareLink", async (req, res) => {
 
   const content = await prisma.content.findMany({
     where: { userId: link.userId },
-    take:limit,
-    orderBy:{createdAt:"desc"},
-    ...(cursor && {
-      cursor:{id:cursor},
-      skip:1
-    })
+    skip: skip,
+    take: limit,
+    orderBy: { createdAt: "desc" },
+  });
+  const total = await prisma.content.count({
+    where: { userId: link.userId },
   });
 
- const nextCursor =
-    content.length === limit
-      ? content[content.length - 1].id
-      : null;
-
-
-  res.json({ userName: user?.firstName, contents: content,nextCursor });
+  res.json({
+    userName: user?.firstName,
+    contents: content,
+    page,
+    totalPages: Math.ceil(total / limit),
+  });
 });
 
 router.post("/reindex", userAuth, async (req, res) => {
