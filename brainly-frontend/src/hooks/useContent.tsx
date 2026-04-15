@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useRef, useState } from "react";
+import { useState } from "react";
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 type Content = {
@@ -13,24 +13,30 @@ type Content = {
 
 export function useContent() {
   const [contents, setContents] = useState<Content[]>([]);
-  const cursorRef = useRef<string | null>(null);
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false)
+  async function refresh(pageNumber = page) {
+    setLoading(true)
+    try {
 
-    async function refresh(reset = false) {
-    const response = await axios.get(
-      `${VITE_BACKEND_URL}/document?limit=10${!reset && cursorRef.current ? `&cursor=${cursorRef.current}` : ""
-      }`,
-      { withCredentials: true }
-    );
+      const response = await axios.get(
+        `${VITE_BACKEND_URL}/document?page=${pageNumber}&limit=10`,
+        { withCredentials: true }
+      );
+      const newData = response.data.content || [];
 
-    const newData = response.data.content || [];
-
-    if (reset) {
-      setContents(newData);
-    } else {
-      setContents(prev => [...prev, ...newData]);
+      setPage(response.data.page)
+      setTotalPages(response.data.totalPages)
+      setContents(newData)
+    } catch {
+      alert("error fetching your contents")
+    } finally {
+      setLoading(false)
     }
 
-    cursorRef.current = response.data.nextCursor;
+
+
   }
 
   const deleteContent = async (id: string) => {
@@ -42,5 +48,5 @@ export function useContent() {
     setContents(prev => prev.filter(item => item.id !== id));
   };
 
-  return { contents, refresh, deleteContent,hasMore:cursorRef.current };
+  return { contents, refresh, deleteContent, page, totalPages,loading };
 }

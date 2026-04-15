@@ -13,13 +13,14 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
 
-export  function DashBoard() {
+export function DashBoard() {
   const navigate = useNavigate()
-const {handleCopy} = useShareBrain()
+  const { handleCopy } = useShareBrain()
   const [ModalOpen, setModalOpen] = useState(false)
-  const { contents, refresh, deleteContent,hasMore } = useContent()
+  const { contents, refresh, deleteContent, page, totalPages, loading } = useContent()
   const [localContents, setLocalContents] = useState<any[]>([])
   const [query, setQuery] = useState("");
+
   const [searchResults, setSearchResults] = useState<any[]>([]);
 
   const handleDelete = async (id: string) => {
@@ -56,12 +57,12 @@ const {handleCopy} = useShareBrain()
 
   };
 
-    useEffect(() => {
+  useEffect(() => {
     setLocalContents(contents);
   }, [contents]);
 
   useEffect(() => {
-    refresh(true);
+    refresh(1);
   }, [ModalOpen])
 
   useEffect(() => {
@@ -78,7 +79,7 @@ const {handleCopy} = useShareBrain()
       </div>
 
       {/* MAIN AREA */}
-      <div className="ml-64 min-h-screen flex flex-col">
+      <div className="ml-64 min-h-screen flex flex-col h-screen">
 
         {/* TOP COMMAND BAR */}
         <div className="sticky top-0 z-20 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
@@ -131,62 +132,60 @@ const {handleCopy} = useShareBrain()
           </div>
         </div>
 
-        {/* CONTENT AREA */}
-        <div className="flex-1 px-8 py-6">
-
-          <CreateContentmodal
-            open={ModalOpen}
-            onClose={() => setModalOpen(false)}
-          />
+        {/* SCROLLABLE CONTENT AREA */}
+        <div className="flex-1 overflow-y-auto px-8 py-6">
+          <CreateContentmodal open={ModalOpen} onClose={() => setModalOpen(false)} />
 
           {/* SEARCH MODE INDICATOR */}
           {(searchResults?.length ?? 0) > 0 && (
             <div className="mb-4 text-sm text-slate-500">
-              Showing results for “{query}”
-              <button
-                onClick={() => setSearchResults([])}
-                className="ml-2 text-indigo-600 hover:underline"
-              >
+              Showing results for "{query}"
+              <button onClick={() => setSearchResults([])} className="ml-2 text-indigo-600 hover:underline">
                 Clear
               </button>
             </div>
           )}
 
-          {/* CARDS GRID (SINGLE SOURCE OF TRUTH) */}
+          {/* CARDS GRID */}
           <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
             {(searchResults.length > 0 ? searchResults : localContents).map(
               ({ id, type, link, title, summary, tags }) => (
                 <div key={id} className="break-inside-avoid">
-                  <Card
-                    id={id}
-                    type={type}
-                    link={link}
-                    title={title}
-                    summary={summary || ""}
-                    tags={tags || []}
-                    onDelete={handleDelete}
-
-                  />
+                  <Card id={id} type={type} link={link} title={title} summary={summary || ""} tags={tags || []} onDelete={handleDelete} />
                 </div>
               )
             )}
           </div>
-          {hasMore && (
-  <div className="fixed bottom-6 right-6">
-    <button
-      onClick={() => refresh()}
-      className="px-5 py-3 rounded-full shadow-lg bg-indigo-600 text-white hover:bg-indigo-700"
-    >
-      Next Page →
-    </button>
-  </div>
-)}
         </div>
+
+        {/* PAGINATION — sticky at the bottom, always visible */}
+        <div className="sticky bottom-0 z-10 bg-white border-t border-slate-200 px-8 py-4 flex justify-end items-center gap-3">
+          <button
+            disabled={page === 1 || loading}
+            onClick={() => refresh(page - 1)}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300 transition-colors"
+          >
+            ← Previous
+          </button>
+          <span className="text-sm text-gray-600">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            disabled={page === totalPages || loading}
+            onClick={() => refresh(page + 1)}
+            className="px-4 py-2 bg-indigo-600 text-white rounded disabled:opacity-50 hover:bg-indigo-700 transition-colors"
+          >
+            Next →
+          </button>
+        </div>
+
       </div>
     </div>
   );
 
 
 }
+
+
 
 
