@@ -30,7 +30,7 @@ model Content {
   title   String?
   tags    String[]
   summary String?
-
+  createdAt DateTime @default(now())
   userId String
   user   User @relation(fields: [userId], references: [id])
 }

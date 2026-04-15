@@ -1,18 +1,17 @@
-import express, { RequestHandler } from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { index } from '../vector.js';
-import { getEmbedding } from '../embedding.js';
-import { userAuth } from '../middleware.js';
-import { buildContext, randon, system_prompt } from '../utils.js';
-import { askGeminiStream } from './askGemini.js';
-import {prisma} from "../db.js"
+import express, { RequestHandler } from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { index } from "../vector.js";
+import { getEmbedding } from "../embedding.js";
+import { userAuth } from "../middleware.js";
+import { buildContext, randon, system_prompt } from "../utils.js";
+import { askGeminiStream } from "./askGemini.js";
+import { prisma } from "../db.js";
 
 export const router = express.Router();
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET!;
 
-
-router.post('/signup', async (req, res) => {
+router.post("/signup", async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
 
   const hashPassword = await bcrypt.hash(password, 10);
@@ -25,10 +24,10 @@ router.post('/signup', async (req, res) => {
     },
   });
 
-  res.status(200).json({ msg: 'signup succesfully' });
+  res.status(200).json({ msg: "signup succesfully" });
 });
 
-router.post('/signin', async (req, res) => {
+router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
 
   const user = await prisma.user.findUnique({
@@ -36,7 +35,7 @@ router.post('/signin', async (req, res) => {
   });
 
   if (!user) {
-    res.json({ msg: 'user not found' });
+    res.json({ msg: "user not found" });
     return;
   }
 
@@ -44,14 +43,18 @@ router.post('/signin', async (req, res) => {
 
   if (user && isMatched) {
     const token = jwt.sign({ id: user.id }, JWT_USER_SECRET);
-    res.cookie('token', token, { httpOnly: true,secure:true,sameSite:"none" });
-    res.json({ msg: 'signin success' });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+    res.json({ msg: "signin success" });
   } else {
-    res.status(403).json({ msg: 'token expire' });
+    res.status(403).json({ msg: "token expire" });
   }
 });
 
-router.post('/addcontent', userAuth, async (req, res) => {
+router.post("/addcontent", userAuth, async (req, res) => {
   const { link, type, title, tags, summary } = req.body;
   // @ts-ignore
   const userId = req.userId;
@@ -61,8 +64,8 @@ router.post('/addcontent', userAuth, async (req, res) => {
       link,
       type,
       title,
-      tags:tags || [],
-      summary:summary || "",
+      tags: tags || [],
+      summary: summary || "",
       userId,
     },
   });
@@ -71,7 +74,7 @@ router.post('/addcontent', userAuth, async (req, res) => {
 Title: ${title}
 Type: ${type}
 Link: ${link}
-tags: ${(tags || []).join(', ')}
+tags: ${(tags || []).join(", ")}
 summary: ${summary}
 `;
 
@@ -87,27 +90,44 @@ summary: ${summary}
     },
   ]);
 
-  res.json({ msg: 'added succesfully' });
+  res.json({ msg: "added succesfully" });
 });
 
-router.get('/document', userAuth, async (req, res) => {
+router.get("/document", userAuth, async (req, res) => {
   // @ts-ignore
   const userId = req.userId;
 
+ 
+  const limit = Number(req.query.limit) || 10;
+  const cursorParam = req.query.cursor;
+  const cursor = typeof cursorParam === "string" ? cursorParam : undefined;
+ 
+
   const content = await prisma.content.findMany({
     where: { userId },
-  });
 
-  res.json({ content });
+    take: limit,
+    orderBy: {createdAt:"desc"},
+    ...(cursor && {
+      cursor: { id: cursor },
+      skip: 1,
+    }),
+  });
+  const nextCursor =
+    content.length === limit
+      ? content[content.length - 1].id
+      : null;
+
+  res.json({ content,nextCursor });
 });
 
-router.delete('/delete/:id', userAuth, async (req, res) => {
+router.delete("/delete/:id", userAuth, async (req, res) => {
   // @ts-ignore
   const userId = req.userId;
   const id = req.params.id;
 
   if (!userId || !id) {
-    console.log('no user or content found');
+    console.log("no user or content found");
     return;
   }
 
@@ -119,10 +139,10 @@ router.delete('/delete/:id', userAuth, async (req, res) => {
     await index.deleteOne(id);
   }
 
-  res.json({ msg: 'deleted' });
+  res.json({ msg: "deleted" });
 });
 
-router.post('/brain/share', userAuth, async (req, res) => {
+router.post("/brain/share", userAuth, async (req, res) => {
   const share = req.body.share;
   const hash = randon(10);
 
@@ -144,7 +164,7 @@ router.post('/brain/share', userAuth, async (req, res) => {
   res.json({ link: hash });
 });
 
-router.get('/brain/:shareLink', async (req, res) => {
+router.get("/brain/:shareLink", async (req, res) => {
   const hash = req.params.shareLink;
 
   const link = await prisma.link.findFirst({
@@ -152,22 +172,37 @@ router.get('/brain/:shareLink', async (req, res) => {
   });
 
   if (!link) {
-    res.status(411).json({ msg: 'sorry incorrect input' });
+    res.status(411).json({ msg: "sorry incorrect input" });
     return;
   }
-
-  const content = await prisma.content.findMany({
-    where: { userId: link.userId },
-  });
+  const limit = Number(req.query.limit) || 10;
+  const cursorParam = req.query.cursor;
+  const cursor = typeof cursorParam === "string" ? cursorParam : undefined;
 
   const user = await prisma.user.findUnique({
     where: { id: link.userId },
   });
 
-  res.json({ userName: user?.firstName, contents: content });
+  const content = await prisma.content.findMany({
+    where: { userId: link.userId },
+    take:limit,
+    orderBy:{createdAt:"desc"},
+    ...(cursor && {
+      cursor:{id:cursor},
+      skip:1
+    })
+  });
+
+ const nextCursor =
+    content.length === limit
+      ? content[content.length - 1].id
+      : null;
+
+
+  res.json({ userName: user?.firstName, contents: content,nextCursor });
 });
 
-router.post('/reindex', userAuth, async (req, res) => {
+router.post("/reindex", userAuth, async (req, res) => {
   // @ts-ignore
   const userId = req.userId;
 
@@ -196,10 +231,10 @@ This content is saved by the user for future reference.
     ]);
   }
 
-  res.json({ msg: 'Reindex completed', total: contents.length });
+  res.json({ msg: "Reindex completed", total: contents.length });
 });
 
-router.post('/search', userAuth, async (req, res) => {
+router.post("/search", userAuth, async (req, res) => {
   const { query } = req.body;
   // @ts-ignore
   const userId = req.userId;
@@ -217,24 +252,24 @@ router.post('/search', userAuth, async (req, res) => {
     .map((m) => m.id);
 
   const contents = await prisma.content.findMany({
-    where: { 
+    where: {
       id: {
-         in: ids
-         }
-     },
+        in: ids,
+      },
+    },
   });
 
   res.json({ contents });
 });
 
-router.post('/rag', userAuth, async (req: any, res: any) => {
+router.post("/rag", userAuth, async (req: any, res: any) => {
   const { question } = req.body;
   // @ts-ignore
   const userId = req.userId;
 
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
   res.flushHeaders();
 
   const queryEmbedding = await getEmbedding(question);
@@ -264,6 +299,6 @@ router.post('/rag', userAuth, async (req: any, res: any) => {
     res.write(`data: ${chunk}\n\n`);
   }
 
-  res.write('data: [DONE]\n\n');
+  res.write("data: [DONE]\n\n");
   res.end();
 });

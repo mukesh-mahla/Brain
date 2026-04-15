@@ -14,7 +14,6 @@ interface CardProps {
   summary: string;
   tags: string[];
   onDelete: (id: string) => void;
-
 }
 
 export const Card = React.memo(({ id, link, title, type,showAction=true, summary, tags, onDelete }: CardProps) => {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 type Content = {
@@ -12,33 +12,35 @@ type Content = {
 };
 
 export function useContent() {
-  const [contents, setContents] = useState<Content[]>([])
-  function refresh() {
-    axios.get(`${VITE_BACKEND_URL}/document`, { withCredentials: true }).then((response) => { setContents(response.data.content || []) })
+  const [contents, setContents] = useState<Content[]>([]);
+  const cursorRef = useRef<string | null>(null);
 
+    async function refresh(reset = false) {
+    const response = await axios.get(
+      `${VITE_BACKEND_URL}/document?limit=10${!reset && cursorRef.current ? `&cursor=${cursorRef.current}` : ""
+      }`,
+      { withCredentials: true }
+    );
+
+    const newData = response.data.content || [];
+
+    if (reset) {
+      setContents(newData);
+    } else {
+      setContents(prev => [...prev, ...newData]);
+    }
+
+    cursorRef.current = response.data.nextCursor;
   }
 
   const deleteContent = async (id: string) => {
     await axios.delete(
       `${VITE_BACKEND_URL}/delete/${id}`,
       { withCredentials: true }
-
     );
 
-
     setContents(prev => prev.filter(item => item.id !== id));
-
   };
 
-  useEffect(() => {
-    refresh()
-    const interval = setInterval(refresh, 100 * 1000)
-
-    return () => {
-      clearInterval(interval)
-    }
-  }, [])
-  return { contents, refresh, deleteContent }
+  return { contents, refresh, deleteContent,hasMore:cursorRef.current };
 }
-
-

@@ -17,7 +17,7 @@ export  function DashBoard() {
   const navigate = useNavigate()
 const {handleCopy} = useShareBrain()
   const [ModalOpen, setModalOpen] = useState(false)
-  const { contents, refresh, deleteContent } = useContent()
+  const { contents, refresh, deleteContent,hasMore } = useContent()
   const [localContents, setLocalContents] = useState<any[]>([])
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -56,12 +56,12 @@ const {handleCopy} = useShareBrain()
 
   };
 
-  useEffect(() => {
+    useEffect(() => {
     setLocalContents(contents);
   }, [contents]);
 
   useEffect(() => {
-    refresh();
+    refresh(true);
   }, [ModalOpen])
 
   useEffect(() => {
@@ -171,6 +171,16 @@ const {handleCopy} = useShareBrain()
               )
             )}
           </div>
+          {hasMore && (
+  <div className="fixed bottom-6 right-6">
+    <button
+      onClick={() => refresh()}
+      className="px-5 py-3 rounded-full shadow-lg bg-indigo-600 text-white hover:bg-indigo-700"
+    >
+      Next Page →
+    </button>
+  </div>
+)}
         </div>
       </div>
     </div>
